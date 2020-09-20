@@ -1,0 +1,11 @@
+<h2>My Discounts</h2>
+
+<%= link_to 'New Discount', new_merchant_discount_path %>
+
+<% @merchant.discounts.each do |discount| %>
+  <ul id=<%= "discount-#{discount.id}" %>>
+      <li>Discount: <%= "#{discount.name}" %></li>
+      <li>Percentage: <%= "#{(discount.percentage * 10).round(2)}% off" %></li>
+      <li>Minimum quantity: <%= "#{discount.minimum_quantity}" %></li>
+  </ul>
+<% end %>
