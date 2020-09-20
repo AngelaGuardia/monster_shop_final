@@ -1,4 +1,4 @@
-<%= form_for @discount, url: new_merchant_discount_path do |f| %>
+<%= form_for [@merchant, @discount] do |f| %>
   <%= f.label :Name %>
   <%= f.text_field :name %><br>
 
