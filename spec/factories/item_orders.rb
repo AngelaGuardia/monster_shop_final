@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :item_order do
+  factory :order_item do
     quantity { Faker::Number.number(digits: 1) }
   end
 end

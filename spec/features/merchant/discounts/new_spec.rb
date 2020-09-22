@@ -28,7 +28,7 @@ describe 'As a merchant' do
 
     within("#discount-#{discount.id}") do
       expect(page).to have_content(discount.name)
-      expect(page).to have_content((discount.percentage*10).round(2))
+      expect(page).to have_content((discount.percentage*100).round(2))
       expect(page).to have_content(discount.minimum_quantity)
     end
   end
