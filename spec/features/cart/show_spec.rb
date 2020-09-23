@@ -167,6 +167,38 @@ RSpec.describe 'Cart Show Page' do
         expect(page).to_not have_content("#{@hippo.name}")
         expect(page).to have_content("Cart: 0")
       end
+
+      it "I can see discounts displayed on my show page" do
+        discount1 = Discount.create!(name: "first", percentage: 0.1, minimum_quantity: 2, merchant: @megan)
+
+        discount2 = Discount.create!(name: "first", percentage: 0.2, minimum_quantity: 3, merchant: @megan)
+
+        visit item_path(@ogre)
+        click_button 'Add to Cart'
+
+        visit '/cart'
+
+        expect(page).to have_content("Total: $#{@ogre.price.round(2)}")
+        expect(page).to have_content("Subtotal: $#{@ogre.price.round(2)}")
+        expect(page).not_to have_content("Discounted Price:")
+
+        within "#item-#{@ogre.id}" do
+          click_button('More of This!')
+        end
+
+        expect(page).to have_content("Total: $#{@ogre.price.round(2)*2*(1-discount1.percentage)}")
+        expect(page).to have_content("Subtotal: $#{@ogre.price.round(2)*2*(1-discount1.percentage)}")
+        expect(page).to have_content("Discounted Price: $#{@ogre.price.round(2)*(1-discount1.percentage)}")
+
+
+        within "#item-#{@ogre.id}" do
+          click_button('More of This!')
+        end
+
+        expect(page).to have_content("Total: $#{@ogre.price.round(2)*3*(1-discount2.percentage)}")
+        expect(page).to have_content("Subtotal: $#{@ogre.price.round(2)*3*(1-discount2.percentage)}")
+        expect(page).to have_content("Discounted Price: $#{@ogre.price.round(2)*(1-discount2.percentage)}")
+      end
     end
   end
 end

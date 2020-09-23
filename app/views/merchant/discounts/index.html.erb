@@ -1,0 +1,13 @@
+<h2>My Discounts</h2>
+
+<%= link_to 'New Discount', new_merchant_discount_path %>
+
+<% @merchant.discounts.each do |discount| %>
+  <ul id=<%= "discount-#{discount.id}" %>>
+      <li>Discount: <%= "#{discount.name}" %></li>
+      <li>Percentage: <%= "#{(discount.percentage * 100).round(2)}% off" %></li>
+      <li>Minimum quantity: <%= "#{discount.minimum_quantity}" %></li>
+      <%= link_to 'Edit Discount', "/merchant/discounts/#{discount.id}/edit" %>
+      <%= link_to 'Delete Discount', "/merchant/discounts/#{discount.id}", method: :delete %>
+  </ul>
+<% end %>

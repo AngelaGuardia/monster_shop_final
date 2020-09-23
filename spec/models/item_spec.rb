@@ -6,6 +6,7 @@ RSpec.describe Item do
     it {should have_many :order_items}
     it {should have_many(:orders).through(:order_items)}
     it {should have_many :reviews}
+    it {should have_many(:discounts).through(:merchant)}
   end
 
   describe 'Validations' do
@@ -19,6 +20,7 @@ RSpec.describe Item do
   describe 'Instance Methods' do
     before :each do
       @megan = Merchant.create!(name: 'Megans Marmalades', address: '123 Main St', city: 'Denver', state: 'CO', zip: 80218)
+      @brian = Merchant.create!(name: 'Brians Bagels', address: '125 Main St', city: 'Denver', state: 'CO', zip: 80218)
       @ogre = @megan.items.create!(name: 'Ogre', description: "I'm an Ogre!", price: 20, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 5 )
       @giant = @megan.items.create!(name: 'Giant', description: "I'm a Giant!", price: 20, image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaLM_vbg2Rh-mZ-B4t-RSU9AmSfEEq_SN9xPP_qrA2I6Ftq_D9Qw', active: true, inventory: 5 )
       @review_1 = @ogre.reviews.create(title: 'Great!', description: 'This Ogre is Great!', rating: 5)
@@ -36,6 +38,37 @@ RSpec.describe Item do
 
     it '.average_rating' do
       expect(@ogre.average_rating.round(2)).to eq(3.00)
+    end
+
+    it ".discount()" do
+      discount1 = Discount.create!(name: "first", percentage: 0.1, minimum_quantity: 10, merchant: @megan)
+
+      discount2 = Discount.create!(name: "first", percentage: 0.2, minimum_quantity: 20, merchant: @megan)
+
+      qty0 = 0
+      expected0 = 1
+      qty1 = 10
+      expected1 = 1 - discount1.percentage
+      qty2 = 20
+      expected2 = 1 - discount2.percentage
+
+      expect(@ogre.discount(qty0)).to eq(expected0)
+      expect(@ogre.discount(qty1)).to eq(expected1)
+      expect(@ogre.discount(qty2)).to eq(expected2)
+    end
+
+    it ".discount() does not apply discounts from other merchants" do
+      discount1 = Discount.create!(name: "first", percentage: 0.1, minimum_quantity: 10, merchant: @brian)
+
+      qty = 10
+      expected = 1
+
+      expect(@ogre.discount(qty)).to eq(expected)
+    end
+
+    it ".discounted_price()" do
+      discount1 = Discount.create!(name: "first", percentage: 0.1, minimum_quantity: 10, merchant: @megan)
+      expect(@ogre.discounted_price(10)).to eq(@ogre.price*(1-discount1.percentage))
     end
   end
 
