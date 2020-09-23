@@ -22,7 +22,6 @@ describe 'As a merchant' do
     end
 
     expect(current_path).to eq(merchant_discounts_path)
-    # QUESTION: Test not passing but localhost host
-    # expect(page).not_to have_css("#discount-#{@discount.id}")
+    expect(page).not_to have_css("#discount-#{@discount.id}")
   end
 end
