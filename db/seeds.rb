@@ -12,6 +12,7 @@ OrderItem.destroy_all
 Item.destroy_all
 Order.destroy_all
 User.destroy_all
+Discount.destroy_all
 Merchant.destroy_all
 
 
@@ -25,5 +26,8 @@ Merchant.destroy_all
     item = FactoryBot.create(:item, merchant_id: shop.id)
     order = FactoryBot.create(:order, user: user)
     FactoryBot.create(:order_item, order_id: order.id, item_id: item.id, price: item.price)
+  end
+  2.times do
+    discount = FactoryBot.create(:discount, merchant_id: shop.id )
   end
 end

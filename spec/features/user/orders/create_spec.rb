@@ -35,6 +35,34 @@ RSpec.describe 'Create Order' do
         expect(page).to have_link(order.id)
       end
     end
+
+    it 'I can see discounts reflected on order' do
+      discount1 = Discount.create!(name: "first", percentage: 0.1, minimum_quantity: 2, merchant: @megan)
+
+      visit item_path(@ogre)
+      click_button 'Add to Cart'
+
+      visit '/cart'
+
+      within "#item-#{@ogre.id}" do
+        click_button('More of This!')
+      end
+
+      total = @ogre.price * 2 * (1-discount1.percentage)
+
+      click_button 'Check Out'
+
+      order = Order.last
+
+      expect(current_path).to eq('/profile/orders')
+      expect(page).to have_content('Order created successfully!')
+      expect(page).to have_link('Cart: 0')
+
+      within "#order-#{order.id}" do
+        expect(page).to have_link(order.id)
+        expect(page).to have_content(total)
+      end
+    end
   end
 
   describe 'As a Visitor' do

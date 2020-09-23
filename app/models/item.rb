@@ -3,6 +3,7 @@ class Item < ApplicationRecord
   has_many :order_items
   has_many :orders, through: :order_items
   has_many :reviews, dependent: :destroy
+  has_many :discounts, through: :merchant
 
   validates_presence_of :name,
                         :description,
@@ -28,5 +29,18 @@ class Item < ApplicationRecord
 
   def average_rating
     reviews.average(:rating)
+  end
+
+  def discount(quantity)
+    applicable_discount = self.discounts.where("minimum_quantity <= #{quantity}").order(percentage: :desc).limit(1)
+    if applicable_discount.empty?
+      1
+    else
+      1 - applicable_discount.first.percentage
+    end
+  end
+
+  def discounted_price(quantity)
+    self.price * discount(quantity)
   end
 end
